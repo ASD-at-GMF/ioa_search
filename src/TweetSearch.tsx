@@ -29,13 +29,13 @@ const TweetSearch: React.FC = () => {
     setError(null);
     
     try {
-      const url = new URL('http://ioarchive.com/mock_search');
+      const url = new URL('http://ioarchive.com/search?');
       if (query) {
-        url.searchParams.append('q', query);
+        url.searchParams.append('query', query);
       }
       
       const response = await fetch(url.toString());
-      
+      console.log(response)
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
