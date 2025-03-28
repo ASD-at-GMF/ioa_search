@@ -36,7 +36,7 @@ const TweetSearch: React.FC = () => {
       
       console.log(url.toString());
       const response = await fetch(url.toString());
-      
+      console.log(response)
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
