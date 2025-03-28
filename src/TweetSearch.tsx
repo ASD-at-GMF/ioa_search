@@ -29,11 +29,12 @@ const TweetSearch: React.FC = () => {
     setError(null);
     
     try {
-      const url = new URL('http://ioarchive.com/mock_search');
+      const url = new URL('http://ioarchive.com/search');
       if (query) {
-        url.searchParams.append('q', query);
+        url.searchParams.set('query', query);
       }
       
+      console.log(url.toString());
       const response = await fetch(url.toString());
       
       if (!response.ok) {
