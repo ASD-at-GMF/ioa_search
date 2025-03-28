@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Box,
   Typography,
@@ -37,6 +37,15 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
+  // useEffect(() => {
+  //   // Fetch tweets when the page changes
+  
+  //     fetchTweets(page, searchQuery);
+  // }, [page, searchQuery, fetchTweets]); 
+
+  const startIndex = (page - 1) * PAGE_SIZE + 1;
+  const endIndex = Math.min(page * PAGE_SIZE, total);
+
   const handlePageChange = (_event: React.ChangeEvent<unknown>, newPage: number) => {
     setPage(newPage);
     fetchTweets(newPage, searchQuery);
@@ -44,6 +53,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   if (!searchQuery && !loading) {
     return null;
   }
+  
 
   return (
     <Box sx={{ mt: 3 }}>
@@ -59,7 +69,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         <>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Typography variant="body1" color="text.secondary">
-              Showing results {tweets.length > 0 ? `1-${tweets.length}` : '0'} out of {total}
+              Showing results {tweets.length > 0 ? `${startIndex}-${endIndex}` : '0'} out of {total}
             </Typography>
             {searchQuery && (
               <Chip 

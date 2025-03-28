@@ -14,6 +14,7 @@ import {
   ApiResponse
 } from './components';
 
+const PAGE_SIZE = 30;
 const TweetSearch: React.FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -29,11 +30,13 @@ const TweetSearch: React.FC = () => {
     setError(null);
     
     try {
-      const url = new URL('http://ioarchive.com/mock_search');
+      const url = new URL('http://ioarchive.com/search');
       if (query) {
-        url.searchParams.append('q', query);
+        url.searchParams.append('query', query);
+        url.searchParams.append('page', page.toString());
+        url.searchParams.append('size', PAGE_SIZE.toString()); 
       }
-      url.searchParams.append('page', page.toString());
+      
 
       const response = await fetch(url.toString());
       
@@ -75,6 +78,8 @@ const TweetSearch: React.FC = () => {
     setSearchInput('');
   };
 
+  
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
@@ -102,7 +107,7 @@ const TweetSearch: React.FC = () => {
             searchQuery={searchQuery}
             onCardClick={handleCardClick}
             onClearSearch={handleClearSearch}
-            fetchTweets={(page: number) => fetchTweets(page, searchQuery)}
+            fetchTweets={fetchTweets}
           />
         </Container>
         
