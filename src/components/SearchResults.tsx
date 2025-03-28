@@ -1,11 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Box,
   Typography,
   Chip,
   Paper,
   CircularProgress,
-  Alert
+  Alert,
+  Pagination
 } from '@mui/material';
 import { Tweet } from './types';
 import TweetCard from './TweetCard';
@@ -18,8 +19,11 @@ interface SearchResultsProps {
   searchQuery: string;
   onCardClick: (tweet: Tweet) => void;
   onClearSearch: () => void;
+
+  fetchTweets: (page: number, query: string) => void;
 }
 
+const PAGE_SIZE = 30;  
 const SearchResults: React.FC<SearchResultsProps> = ({
   loading,
   error,
@@ -27,8 +31,16 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   total,
   searchQuery,
   onCardClick,
-  onClearSearch
+  onClearSearch,
+  fetchTweets
 }) => {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, newPage: number) => {
+    setPage(newPage);
+    fetchTweets(newPage, searchQuery);
+  };
   if (!searchQuery && !loading) {
     return null;
   }
@@ -75,6 +87,16 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                   onCardClick={onCardClick}
                 />
               ))}
+              {total > PAGE_SIZE && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={handlePageChange}
+                    color="primary"
+                  />
+                </Box>
+              )}
             </>
           )}
         </>

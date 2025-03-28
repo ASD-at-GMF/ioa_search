@@ -24,7 +24,7 @@ const TweetSearch: React.FC = () => {
   const [selectedTweet, setSelectedTweet] = useState<Tweet | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
-  const fetchTweets = async (query: string = '') => {
+  const fetchTweets = async (page: number, query: string = '') => {
     setLoading(true);
     setError(null);
     
@@ -33,7 +33,8 @@ const TweetSearch: React.FC = () => {
       if (query) {
         url.searchParams.append('q', query);
       }
-      
+      url.searchParams.append('page', page.toString());
+
       const response = await fetch(url.toString());
       
       if (!response.ok) {
@@ -53,7 +54,7 @@ const TweetSearch: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setSearchQuery(searchInput);
-    fetchTweets(searchInput);
+    fetchTweets(1, searchInput);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,6 +102,7 @@ const TweetSearch: React.FC = () => {
             searchQuery={searchQuery}
             onCardClick={handleCardClick}
             onClearSearch={handleClearSearch}
+            fetchTweets={(page: number) => fetchTweets(page, searchQuery)}
           />
         </Container>
         
