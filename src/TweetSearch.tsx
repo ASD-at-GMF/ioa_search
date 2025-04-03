@@ -32,14 +32,19 @@ const TweetSearch: React.FC = () => {
     try {
       const url = new URL('http://ioarchive.com/search');
       if (query) {
+
         url.searchParams.append('query', query);
         url.searchParams.append('page', page.toString());
         url.searchParams.append('size', PAGE_SIZE.toString()); 
+      
+//         merge was here
+        url.searchParams.set('query', query);
       }
       
+      console.log(url.toString());
 
       const response = await fetch(url.toString());
-      
+      console.log(response)
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
