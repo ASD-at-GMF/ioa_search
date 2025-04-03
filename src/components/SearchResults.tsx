@@ -23,7 +23,7 @@ interface SearchResultsProps {
   fetchTweets: (page: number, query: string) => void;
 }
 
-const PAGE_SIZE = 30;  
+const PAGE_SIZE = 10;  
 const SearchResults: React.FC<SearchResultsProps> = ({
   loading,
   error,

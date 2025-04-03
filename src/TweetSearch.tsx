@@ -14,10 +14,10 @@ import {
   ApiResponse
 } from './components';
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 10;
 const TweetSearch: React.FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>([]);
-  const [total, setTotal] = useState<number>(0);
+  const [total, setTotal] = useState<number>(20);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
