@@ -1,11 +1,12 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Box,
   Typography,
   Chip,
   Paper,
   CircularProgress,
-  Alert
+  Alert,
+  Pagination
 } from '@mui/material';
 import { Tweet } from './types';
 import TweetCard from './TweetCard';
@@ -18,8 +19,11 @@ interface SearchResultsProps {
   searchQuery: string;
   onCardClick: (tweet: Tweet) => void;
   onClearSearch: () => void;
+
+  fetchTweets: (page: number, query: string) => void;
 }
 
+const PAGE_SIZE = 10;  
 const SearchResults: React.FC<SearchResultsProps> = ({
   loading,
   error,
@@ -27,11 +31,29 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   total,
   searchQuery,
   onCardClick,
-  onClearSearch
+  onClearSearch,
+  fetchTweets
 }) => {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  // useEffect(() => {
+  //   // Fetch tweets when the page changes
+  
+  //     fetchTweets(page, searchQuery);
+  // }, [page, searchQuery, fetchTweets]); 
+
+  const startIndex = (page - 1) * PAGE_SIZE + 1;
+  const endIndex = Math.min(page * PAGE_SIZE, total);
+
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, newPage: number) => {
+    setPage(newPage);
+    fetchTweets(newPage, searchQuery);
+  };
   if (!searchQuery && !loading) {
     return null;
   }
+  
 
   return (
     <Box sx={{ mt: 3 }}>
@@ -47,7 +69,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         <>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Typography variant="body1" color="text.secondary">
-              Showing results {tweets.length > 0 ? `1-${tweets.length}` : '0'} out of {total}
+              Showing results {tweets.length > 0 ? `${startIndex}-${endIndex}` : '0'} out of {total}
             </Typography>
             {searchQuery && (
               <Chip 
@@ -75,6 +97,16 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                   onCardClick={onCardClick}
                 />
               ))}
+              {total > PAGE_SIZE && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={handlePageChange}
+                    color="primary"
+                  />
+                </Box>
+              )}
             </>
           )}
         </>

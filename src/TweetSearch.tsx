@@ -14,9 +14,10 @@ import {
   ApiResponse
 } from './components';
 
+const PAGE_SIZE = 10;
 const TweetSearch: React.FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>([]);
-  const [total, setTotal] = useState<number>(0);
+  const [total, setTotal] = useState<number>(20);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -24,17 +25,24 @@ const TweetSearch: React.FC = () => {
   const [selectedTweet, setSelectedTweet] = useState<Tweet | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
-  const fetchTweets = async (query: string = '') => {
+  const fetchTweets = async (page: number, query: string = '') => {
     setLoading(true);
     setError(null);
     
     try {
       const url = new URL('http://ioarchive.com/search');
       if (query) {
+
+        url.searchParams.append('query', query);
+        url.searchParams.append('page', page.toString());
+        url.searchParams.append('size', PAGE_SIZE.toString()); 
+      
+//         merge was here
         url.searchParams.set('query', query);
       }
       
       console.log(url.toString());
+
       const response = await fetch(url.toString());
       console.log(response)
       if (!response.ok) {
@@ -54,7 +62,7 @@ const TweetSearch: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setSearchQuery(searchInput);
-    fetchTweets(searchInput);
+    fetchTweets(1, searchInput);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,6 +82,8 @@ const TweetSearch: React.FC = () => {
     setSearchQuery('');
     setSearchInput('');
   };
+
+  
 
   return (
     <ThemeProvider theme={theme}>
@@ -102,6 +112,7 @@ const TweetSearch: React.FC = () => {
             searchQuery={searchQuery}
             onCardClick={handleCardClick}
             onClearSearch={handleClearSearch}
+            fetchTweets={fetchTweets}
           />
         </Container>
         
