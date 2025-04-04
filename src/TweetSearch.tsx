@@ -2,17 +2,21 @@ import React, { useState } from 'react';
 import {
   Box,
   Container,
-  ThemeProvider
+  ThemeProvider,
+  SelectChangeEvent,
 } from '@mui/material';
+import { Dayjs } from 'dayjs';
 import {
   TweetCard,
   TweetDetailsDialog,
   SearchBar,
   SearchResults,
+  SearchFilters,
   theme,
   Tweet,
   ApiResponse
 } from './components';
+import { start } from 'repl';
 
 const PAGE_SIZE = 10;
 const TweetSearch: React.FC = () => {
@@ -24,6 +28,10 @@ const TweetSearch: React.FC = () => {
   const [searchInput, setSearchInput] = useState<string>('');
   const [selectedTweet, setSelectedTweet] = useState<Tweet | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [language, setLanguage] = useState<string>('');
+  const [startDate, setStartDate] = useState<Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  const [sortBy, setSortBy] = useState<string>('');
 
   const fetchTweets = async (page: number, query: string = '') => {
     setLoading(true);
@@ -35,10 +43,16 @@ const TweetSearch: React.FC = () => {
 
         url.searchParams.append('query', query);
         url.searchParams.append('page', page.toString());
-        url.searchParams.append('size', PAGE_SIZE.toString()); 
-      
-//         merge was here
-        url.searchParams.set('query', query);
+        url.searchParams.append('size', PAGE_SIZE.toString());
+        url.searchParams.append('language', language);
+        if(startDate && endDate) {
+          url.searchParams.append('from', formatDate(startDate.toString()));
+          console.log('here')
+          console.log(startDate.toString());
+          url.searchParams.append('to', formatDate(endDate.toString()));
+        }
+        url.searchParams.append('sort_by', sortBy);
+
       }
       
       console.log(url.toString());
@@ -58,6 +72,12 @@ const TweetSearch: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const formattedDate = date.toISOString().split("T")[0];
+    return formattedDate;
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +103,14 @@ const TweetSearch: React.FC = () => {
     setSearchInput('');
   };
 
+  const handleLanguageChange = (event: SelectChangeEvent) => {
+    setLanguage(event.target.value as string);
+  };
   
+  const handleSortByChange = (event: SelectChangeEvent) => {
+    setSortBy(event.target.value as string);
+  };
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -102,6 +129,17 @@ const TweetSearch: React.FC = () => {
             loading={loading}
             onInputChange={handleInputChange}
             onSubmit={handleSearch}
+          />
+
+          <SearchFilters
+            language={language}
+            startDate={startDate}
+            endDate={endDate}
+            sortBy={sortBy}
+            onLanguageChange={handleLanguageChange}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+            onSortByChange={handleSortByChange}
           />
           
           <SearchResults
