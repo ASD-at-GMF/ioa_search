@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
   ThemeProvider,
   SelectChangeEvent,
+  Autocomplete,
+  TextField
 } from '@mui/material';
 import { Dayjs } from 'dayjs';
 import {
@@ -32,29 +34,31 @@ const TweetSearch: React.FC = () => {
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [sortBy, setSortBy] = useState<string>('');
+  const [hashtagInput, setHashtagInput] = useState('');
+  const [hashtags, setHashtags] = useState<string[]>([]);
+  
+  const [suggestedHashtags, setSuggestedHashtags] = useState<string[]>([]);
 
   const fetchTweets = async (page: number, query: string = '') => {
     setLoading(true);
     setError(null);
     
     try {
-      const url = new URL('http://ioarchive.com/search');
-      if (query) {
-
-        url.searchParams.append('query', query);
-        url.searchParams.append('page', page.toString());
-        url.searchParams.append('size', PAGE_SIZE.toString());
-        url.searchParams.append('language', language);
-        if(startDate && endDate) {
-          url.searchParams.append('from', formatDate(startDate.toString()));
-          console.log('here')
-          console.log(startDate.toString());
-          url.searchParams.append('to', formatDate(endDate.toString()));
-        }
-        url.searchParams.append('sort_by', sortBy);
-
+      const url = new URL('http://45.32.214.14:5000/search');
+      url.searchParams.append('query', query);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('size', PAGE_SIZE.toString());
+      url.searchParams.append('language', language);
+      if(startDate && endDate) {
+        url.searchParams.append('from', formatDate(startDate.toString()));
+        url.searchParams.append('to', formatDate(endDate.toString()));
       }
-      
+      url.searchParams.append('sort_by', sortBy);
+      hashtags.forEach(tag => {
+        const normalized = tag.startsWith('#') ? tag.slice(1) : tag;
+        url.searchParams.append('hashtags', normalized);
+      });
+            
       console.log(url.toString());
 
       const response = await fetch(url.toString());
@@ -72,6 +76,21 @@ const TweetSearch: React.FC = () => {
       setLoading(false);
     }
   };
+  
+  const fetchHashtagSuggestions = async () => {
+    try {
+      const url = new URL('http://45.32.214.14:5000/insights');
+      const response = await fetch(url.toString());
+      if (!response.ok) {
+        throw new Error('Failed to fetch hashtag suggestions');
+      }
+      const data = await response.json();
+      const topHashtags = data.top_hashtags.map((item: any) => item.key);
+      setSuggestedHashtags(topHashtags);
+    } catch (err) {
+      console.error('Error fetching hashtag suggestions:', err);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -87,6 +106,21 @@ const TweetSearch: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
+  };
+
+  const handleAddHashtag = () => {
+    let trimmed = hashtagInput.trim();
+    if (!trimmed.startsWith('#')) {
+      trimmed = `#${trimmed}`;
+    }
+    if (trimmed && !hashtags.includes(trimmed)) {
+      setHashtags([...hashtags, trimmed]);
+      setHashtagInput('');
+    }
+  };
+
+  const handleRemoveHashtag = (tagToRemove: string) => {
+    setHashtags(hashtags.filter(tag => tag !== tagToRemove));
   };
 
   const handleCardClick = (tweet: Tweet) => {
@@ -112,6 +146,10 @@ const TweetSearch: React.FC = () => {
   };
 
 
+  useEffect(() => {
+    fetchHashtagSuggestions();
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
@@ -130,6 +168,66 @@ const TweetSearch: React.FC = () => {
             onInputChange={handleInputChange}
             onSubmit={handleSearch}
           />
+
+          <Box sx={{ mb: 2 }}>
+            <Autocomplete
+              multiple
+              freeSolo
+              options={suggestedHashtags}
+              value={hashtags}
+              onChange={(event, newValue) => {
+                setHashtags(newValue);
+              }}
+              inputValue={hashtagInput}
+              onInputChange={(event, newInputValue) => {
+                setHashtagInput(newInputValue);
+              }}
+              renderTags={(value: readonly string[], getTagProps) =>
+                value.map((option: string, index: number) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      backgroundColor: 'primary.main',
+                      color: 'white',
+                      px: 2,
+                      py: 0.5,
+                      borderRadius: 4,
+                      mr: 1,
+                      mb: 1
+                    }}
+                  >
+                    #{option}
+                    <Box
+                      component="button"
+                      onClick={() =>
+                        setHashtags(hashtags.filter(tag => tag !== option))
+                      }
+                      sx={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'white',
+                        ml: 1,
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      ×
+                    </Box>
+                  </Box>
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Hashtags"
+                  placeholder="Type and press Enter"
+                />
+              )}
+            />
+          </Box>
 
           <SearchFilters
             language={language}
