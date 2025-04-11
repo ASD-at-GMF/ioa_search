@@ -16,9 +16,11 @@ import {
   SearchFilters,
   theme,
   Tweet,
-  ApiResponse
+  ApiResponse,
+  Chart
 } from './components';
 import { start } from 'repl';
+import { ChatRounded } from '@mui/icons-material';
 
 const PAGE_SIZE = 10;
 const TweetSearch: React.FC = () => {
@@ -44,7 +46,7 @@ const TweetSearch: React.FC = () => {
     setError(null);
     
     try {
-      const url = new URL('http://45.32.214.14:5000/search');
+      const url = new URL('http://ioarchive.com/search');
       url.searchParams.append('query', query);
       url.searchParams.append('page', page.toString());
       url.searchParams.append('size', PAGE_SIZE.toString());
@@ -79,7 +81,7 @@ const TweetSearch: React.FC = () => {
   
   const fetchHashtagSuggestions = async () => {
     try {
-      const url = new URL('http://45.32.214.14:5000/insights');
+      const url = new URL('http://ioarchive.com/insights');
       const response = await fetch(url.toString());
       if (!response.ok) {
         throw new Error('Failed to fetch hashtag suggestions');
@@ -239,7 +241,11 @@ const TweetSearch: React.FC = () => {
             onEndDateChange={setEndDate}
             onSortByChange={handleSortByChange}
           />
-          
+
+          {tweets.length > 0 && (
+            <Chart tweetData={tweets} />
+          )}
+
           <SearchResults
             loading={loading}
             error={error}
