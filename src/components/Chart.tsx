@@ -22,15 +22,16 @@ interface ChartProps {
 const Chart: React.FC<ChartProps> = ({ 
   tweetData
 }) => {
-  const data = tweetData.map((tweet) => {
-    const creationDate = new Date(tweet.account_creation_date);
-    const now = new Date();
-    const accountAgeInYears = (now.getTime() - creationDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
-    return {
-      accountAge: Number(accountAgeInYears.toFixed(2)),
-      followerCount: Number(tweet.follower_count),
-    };
-  });
+  const data = tweetData
+    .map((tweet) => {
+      const tweetDate = new Date(tweet.tweet_time);
+      return {
+        tweetTime: tweetDate.getTime(),
+        followerCount: tweet.follower_count,
+        displayTime: tweetDate.toLocaleDateString(),
+      };
+    })
+    .sort((a, b) => a.tweetTime - b.tweetTime);
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -40,9 +41,10 @@ const Chart: React.FC<ChartProps> = ({
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis 
           type="number" 
-          dataKey="accountAge" 
-          name="Account Age (years)" 
-          label={{ value: 'Account Age (years)', position: 'insideBottomRight', offset: -5 }}
+          dataKey="tweetTime" 
+          name="Tweet Time"
+          tickFormatter={(value) => new Date(value).toLocaleDateString()}
+          label={{ value: 'Tweet Date', position: 'insideBottomRight', offset: -5 }}
         />
         <YAxis 
           type="number" 
@@ -50,7 +52,17 @@ const Chart: React.FC<ChartProps> = ({
           name="Follower Count"
           label={{ value: 'Follower Count', angle: -90, position: 'insideLeft' }}
         />
-        <Scatter name="Accounts" data={data} fill="#8884d8" />
+        <Tooltip 
+          formatter={(value: any, name: string) => {
+            if (name === 'followerCount') return [value.toLocaleString(), 'Followers'];
+            return [new Date(value).toLocaleDateString(), 'Date'];
+          }}
+        />
+        <Scatter 
+          name="Tweets" 
+          data={data} 
+          fill="#8884d8"
+        />
       </ScatterChart>
     </ResponsiveContainer>
   );

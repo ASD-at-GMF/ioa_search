@@ -1,4 +1,5 @@
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: string | null): string => {
+  if (!dateString) return 'N/A';
   try {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -10,7 +11,8 @@ export const formatDate = (dateString: string): string => {
   }
 };
 
-export const formatDateDetailed = (dateString: string): string => {
+export const formatDateDetailed = (dateString: string | null): string => {
+  if (!dateString) return 'N/A';
   try {
     return new Date(dateString).toLocaleString('en-US', {
       month: 'long',
@@ -25,6 +27,15 @@ export const formatDateDetailed = (dateString: string): string => {
 };
 
 export const getHashtags = (hashtags: string | undefined): string[] => {
-  if (!hashtags) return [];
-  return hashtags.split(',').map(tag => tag.trim());
+  if (!hashtags || hashtags === '') return [];
+  return hashtags.split(',').filter(tag => tag.trim() !== '').map(tag => tag.trim());
+};
+
+export const formatNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
 };

@@ -14,6 +14,7 @@ import {
   SearchBar,
   SearchResults,
   SearchFilters,
+  DownloadCSVButton,
   theme,
   Tweet,
   ApiResponse,
@@ -72,6 +73,7 @@ const TweetSearch: React.FC = () => {
       const data = await response.json() as ApiResponse;
       setTweets(data.tweets);
       setTotal(data.total);
+      console.log('Search response:', data);
     } catch (err) {
       setError(err as Error);
     } finally {
@@ -255,6 +257,11 @@ const TweetSearch: React.FC = () => {
             onCardClick={handleCardClick}
             onClearSearch={handleClearSearch}
             fetchTweets={fetchTweets}
+            language={language}
+            startDate={startDate ? formatDate(startDate.toString()) : null}
+            endDate={endDate ? formatDate(endDate.toString()) : null}
+            sortBy={sortBy}
+            hashtags={hashtags}
           />
         </Container>
         

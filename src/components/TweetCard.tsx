@@ -15,7 +15,7 @@ import RepeatIcon from '@mui/icons-material/Repeat';
 import CommentIcon from '@mui/icons-material/Comment';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { Tweet } from './types';
-import { formatDate, getHashtags } from './utils';
+import { formatDate, getHashtags, formatNumber } from './utils';
 
 interface TweetCardProps {
   tweet: Tweet;
@@ -83,15 +83,15 @@ const TweetCard: React.FC<TweetCardProps> = ({ tweet, index, onCardClick }) => {
           <Box sx={{ display: 'flex', mt: 2, color: 'text.secondary' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
               <FavoriteIcon fontSize="small" sx={{ mr: 0.5 }} />
-              <Typography variant="body2">{tweet.like_count}</Typography>
+              <Typography variant="body2">{formatNumber(tweet.like_count)}</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
               <RepeatIcon fontSize="small" sx={{ mr: 0.5 }} />
-              <Typography variant="body2">{tweet.retweet_count}</Typography>
+              <Typography variant="body2">{formatNumber(tweet.retweet_count)}</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <CommentIcon fontSize="small" sx={{ mr: 0.5 }} />
-              <Typography variant="body2">{tweet.reply_count}</Typography>
+              <Typography variant="body2">{formatNumber(tweet.reply_count)}</Typography>
             </Box>
           </Box>
         </CardContent>
