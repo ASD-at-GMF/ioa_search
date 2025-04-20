@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { Tweet } from './types';
 import TweetCard from './TweetCard';
+import DownloadCSVButton from './DownloadCSVButton';
 
 interface SearchResultsProps {
   loading: boolean;
@@ -19,8 +20,12 @@ interface SearchResultsProps {
   searchQuery: string;
   onCardClick: (tweet: Tweet) => void;
   onClearSearch: () => void;
-
   fetchTweets: (page: number, query: string) => void;
+  language?: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  sortBy?: string;
+  hashtags?: string[];
 }
 
 const PAGE_SIZE = 10;  
@@ -32,7 +37,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   searchQuery,
   onCardClick,
   onClearSearch,
-  fetchTweets
+  fetchTweets,
+  language = '',
+  startDate = null,
+  endDate = null,
+  sortBy = '',
+  hashtags = []
 }) => {
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -50,9 +60,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     setPage(newPage);
     fetchTweets(newPage, searchQuery);
   };
-  if (!searchQuery && !loading) {
-    return null;
-  }
   
 
   return (
@@ -68,9 +75,23 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       ) : (
         <>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="body1" color="text.secondary">
-              Showing results {tweets.length > 0 ? `${startIndex}-${endIndex}` : '0'} out of {total}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body1" color="text.secondary">
+                Showing results {tweets.length > 0 ? `${startIndex}-${endIndex}` : '0'} out of {total}
+              </Typography>
+              {tweets.length > 0 && (
+                <DownloadCSVButton
+                  searchQuery={searchQuery}
+                  language={language}
+                  startDate={startDate}
+                  endDate={endDate}
+                  sortBy={sortBy}
+                  hashtags={hashtags}
+                  pageSize={PAGE_SIZE}
+                  totalResults={total}
+                />
+              )}
+            </Box>
             {searchQuery && (
               <Chip 
                 label={`Search: ${searchQuery}`}

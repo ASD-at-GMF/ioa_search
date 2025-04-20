@@ -1,19 +1,21 @@
 export interface Tweet {
-  account_creation_date: string;
+  account_creation_date: string | null;
   account_language: string;
-  follower_count: string;
-  following_count: string;
+  dataset: string;
+  file_name: string;
+  follower_count: number;
+  following_count: number;
   hashtags: string;
   in_reply_to_tweetid: string;
   in_reply_to_userid: string;
   is_retweet: string;
   latitude: string;
-  like_count: string;
+  like_count: number;
   longitude: string;
-  quote_count: string;
+  quote_count: number;
   quoted_tweet_tweetid: string;
-  reply_count: string;
-  retweet_count: string;
+  reply_count: number;
+  retweet_count: number;
   retweet_tweetid: string;
   retweet_userid: string;
   tweet_client_name: string;
@@ -23,7 +25,7 @@ export interface Tweet {
   tweetid: string;
   urls: string;
   user_display_name: string;
-  user_mentions: string;
+  user_mentions: string[];
   user_profile_description: string;
   user_profile_url: string;
   user_reported_location: string;
@@ -32,6 +34,8 @@ export interface Tweet {
 }
 
 export interface ApiResponse {
+  page: number;
+  size: number;
   total: number;
   tweets: Tweet[];
 }
