@@ -1,9 +1,19 @@
+/**
+ * DownloadCSVButton Component
+ * Provides functionality to export tweet data as CSV:
+ * - Downloads all tweets from current search
+ * - Shows loading state during export
+ * - Handles error states
+ * - Formats data for CSV export
+ */
+
 import React, { useState } from 'react';
 import { Button, CircularProgress } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { Tweet, ApiResponse } from './types';
 import { convertTweetsToCSV, downloadCSV } from '../utils/csvExport';
 
+// Props interface for the download button
 interface DownloadCSVButtonProps {
   searchQuery: string;
   language: string;
@@ -99,7 +109,7 @@ const DownloadCSVButton: React.FC<DownloadCSVButtonProps> = ({
       startIcon={loading ? <CircularProgress size={20} /> : <FileDownloadIcon />}
       sx={{ ml: 2 }}
     >
-      {loading ? 'Exporting...' : 'Export CSV'}
+      {loading ? 'Exporting...' : 'Export'}
     </Button>
   );
 };

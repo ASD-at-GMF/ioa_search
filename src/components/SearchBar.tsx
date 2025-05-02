@@ -1,3 +1,13 @@
+/**
+ * SearchBar Component
+ * Provides the main search interface for the application
+ * Features:
+ * - Search input field with icon
+ * - Loading state indicator
+ * - Submit button
+ * - Responsive design
+ */
+
 import React from 'react';
 import {
   Paper,
@@ -8,6 +18,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
+// Props interface for the search bar component
 interface SearchBarProps {
   searchInput: string;
   loading: boolean;

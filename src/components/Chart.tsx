@@ -1,3 +1,12 @@
+/**
+ * Chart Component
+ * Displays various analytics visualizations for tweet data including:
+ * - Time-based tweet frequency
+ * - Top hashtags distribution
+ * - Top users activity
+ * - URL frequency analysis
+ */
+
 import React from 'react';
 import {
   BarChart,
@@ -9,6 +18,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+// Types for the insight data received from the API
 interface InsightData {
   top_hashtags: Array<{ key: string; doc_count: number }>;
   top_urls: Array<{ key: string; doc_count: number }>;
