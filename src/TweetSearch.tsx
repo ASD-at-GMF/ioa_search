@@ -187,37 +187,6 @@ const TweetSearch: React.FC = () => {
     }
   };
 
-  // const fetchInsights = async (query: string = '') => {
-  //   setInsightsLoading(true);
-  //   try {
-  //     const url = new URL('http://45.32.214.14:5000/insights');
-  //     url.searchParams.append('query', query);
-  //     url.searchParams.append('language', language);
-  //     if (startDate && endDate) {
-  //       url.searchParams.append('from', formatDate(startDate.toString()));
-  //       url.searchParams.append('to', formatDate(endDate.toString()));
-  //     }
-  //     hashtags.forEach(tag => {
-  //       const normalized = tag.startsWith('#') ? tag.slice(1) : tag;
-  //       url.searchParams.append('hashtags', normalized);
-  //     });
-
-  //     const response = await fetch(url.toString());
-  //     if (!response.ok) throw new Error('Failed to fetch insights');
-
-  //     const data = await response.json();
-  //     setInsights({
-  //       top_hashtags: data.top_hashtags.map((item: any) => item.key),
-  //       top_users: data.top_users.map((item: any) => item.key),
-  //       top_urls: data.top_urls.map((item: any) => item.key),
-  //     });
-  //   } catch (err) {
-  //     console.error('Error fetching insights:', err);
-  //   } finally {
-  //     setInsightsLoading(false);
-  //   }
-  // };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const formattedDate = date.toISOString().split("T")[0];
