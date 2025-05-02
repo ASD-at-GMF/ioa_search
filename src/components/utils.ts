@@ -26,9 +26,9 @@ export const formatDateDetailed = (dateString: string | null): string => {
   }
 };
 
-export const getHashtags = (hashtags: string | undefined): string[] => {
-  if (!hashtags || hashtags === '') return [];
-  return hashtags.split(',').filter(tag => tag.trim() !== '').map(tag => tag.trim());
+export const getHashtags = (hashtags: string[] | undefined): string[] => {
+  if (!hashtags) return []
+  return hashtags
 };
 
 export const formatNumber = (num: number): string => {

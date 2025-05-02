@@ -5,7 +5,9 @@ import {
   ThemeProvider,
   SelectChangeEvent,
   Autocomplete,
-  TextField
+  TextField,
+  Grid,
+  Typography
 } from '@mui/material';
 import { Dayjs } from 'dayjs';
 import {
@@ -26,6 +28,7 @@ import { ChatRounded } from '@mui/icons-material';
 const PAGE_SIZE = 10;
 const TweetSearch: React.FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>([]);
+  const [allTweets, setAllTweets] = useState<Tweet[]>([]);
   const [total, setTotal] = useState<number>(20);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -41,6 +44,67 @@ const TweetSearch: React.FC = () => {
   const [hashtags, setHashtags] = useState<string[]>([]);
   
   const [suggestedHashtags, setSuggestedHashtags] = useState<string[]>([]);
+  const [searchTimestamp, setSearchTimestamp] = useState<number>(0);
+  const [insightData, setInsightData] = useState<any>(null);
+
+  const fetchAllTweets = async () => {
+    setLoading(true);
+    setError(null);
+    const allFetchedTweets: Tweet[] = [];
+    
+    try {
+      const totalPages = Math.ceil(total / PAGE_SIZE);
+      for (let page = 1; page <= totalPages; page++) {
+        const url = new URL('http://ioarchive.com/search');
+        url.searchParams.append('query', searchQuery);
+        url.searchParams.append('page', page.toString());
+        url.searchParams.append('size', PAGE_SIZE.toString());
+        url.searchParams.append('language', language);
+        if(startDate && endDate) {
+          url.searchParams.append('from_date', formatDate(startDate.toString()));
+          url.searchParams.append('to_date', formatDate(endDate.toString()));
+        }
+        url.searchParams.append('sort_by', sortBy);
+        hashtags.forEach(tag => {
+          const normalized = tag.startsWith('#') ? tag.slice(1) : tag;
+          url.searchParams.append('hashtags', normalized);
+        });
+        
+        const response = await fetch(url.toString());
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        
+        const data = await response.json() as ApiResponse;
+        allFetchedTweets.push(...data.tweets);
+      }
+      
+      setAllTweets(allFetchedTweets);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchInsights = async (query: string) => {
+    try {
+      const url = new URL('https://ioarchive.com/insights');
+      url.searchParams.append('query', query);
+      url.searchParams.append('interval', 'month');
+      url.searchParams.append('language', language);
+
+      const response = await fetch(url.toString());
+      if (!response.ok) {
+        throw new Error('Failed to fetch insights');
+      }
+
+      const data = await response.json();
+      setInsightData(data);
+    } catch (err) {
+      console.error('Error fetching insights:', err);
+    }
+  };
 
   const fetchTweets = async (page: number, query: string = '') => {
     setLoading(true);
@@ -74,6 +138,13 @@ const TweetSearch: React.FC = () => {
       setTweets(data.tweets);
       setTotal(data.total);
       console.log('Search response:', data);
+      
+      // Fetch insights data when search query changes
+      if (query) {
+        fetchInsights(query);
+      } else {
+        setInsightData(null);
+      }
     } catch (err) {
       setError(err as Error);
     } finally {
@@ -105,7 +176,7 @@ const TweetSearch: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setSearchQuery(searchInput);
-    fetchTweets(1, searchInput);
+    setSearchTimestamp(Date.now()); // Add timestamp to force refresh
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,6 +222,13 @@ const TweetSearch: React.FC = () => {
 
 
   useEffect(() => {
+    if (searchQuery && searchTimestamp > 0) {
+      fetchAllTweets();
+      fetchTweets(1, searchQuery);
+    }
+  }, [searchQuery, searchTimestamp]);
+
+  useEffect(() => {
     fetchHashtagSuggestions();
   }, []);
 
@@ -164,6 +242,10 @@ const TweetSearch: React.FC = () => {
             </Typography>
           </Toolbar>
         </AppBar> */}
+
+        <Typography variant="h2" component="h2">
+          Information Archive Search
+        </Typography>
         
         <Container maxWidth="md" sx={{ py: 4 }}>
           <SearchBar 
@@ -244,25 +326,30 @@ const TweetSearch: React.FC = () => {
             onSortByChange={handleSortByChange}
           />
 
-          {tweets.length > 0 && (
-            <Chart tweetData={tweets} />
-          )}
-
-          <SearchResults
-            loading={loading}
-            error={error}
-            tweets={tweets}
-            total={total}
-            searchQuery={searchQuery}
-            onCardClick={handleCardClick}
-            onClearSearch={handleClearSearch}
-            fetchTweets={fetchTweets}
-            language={language}
-            startDate={startDate ? formatDate(startDate.toString()) : null}
-            endDate={endDate ? formatDate(endDate.toString()) : null}
-            sortBy={sortBy}
-            hashtags={hashtags}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              {insightData && (
+                <Chart insightData={insightData} />
+              )}
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <SearchResults
+                loading={loading}
+                error={error}
+                tweets={tweets}
+                total={total}
+                searchQuery={searchQuery}
+                onCardClick={handleCardClick}
+                onClearSearch={handleClearSearch}
+                fetchTweets={fetchTweets}
+                language={language}
+                startDate={startDate ? formatDate(startDate.toString()) : null}
+                endDate={endDate ? formatDate(endDate.toString()) : null}
+                sortBy={sortBy}
+                hashtags={hashtags}
+              />
+            </Grid>
+          </Grid>
         </Container>
         
         <TweetDetailsDialog

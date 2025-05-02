@@ -38,7 +38,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   return (
     <Box sx={{ my: 2 }}>
       <Stack direction="row" spacing={2} alignItems="center">
-        <FormControl sx={{ minWidth: 120 }}>
+        <FormControl sx={{ minWidth: 120, '& .MuiInputLabel-root': { top: -6 } }}>
           <InputLabel>Language</InputLabel>
           <Select
             value={language}
@@ -70,7 +70,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           </Box>
         </LocalizationProvider>
 
-        <FormControl sx={{ minWidth: 120 }}>
+        <FormControl sx={{ minWidth: 120, '& .MuiInputLabel-root': { top: -6 } }}>
           <InputLabel>Sort by</InputLabel>
           <Select
             value={sortBy}
@@ -79,10 +79,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             size="small"
           >
             <MenuItem value="">None</MenuItem>
-            <MenuItem value="_score">Accuracy</MenuItem>
-            <MenuItem value="tweet_time">Time</MenuItem>
-            <MenuItem value="retweet_count">Retweets</MenuItem>
-            <MenuItem value="like_count">Likes</MenuItem>
+            <MenuItem value="accuracy">Accuracy</MenuItem>
+            <MenuItem value="time">Time</MenuItem>
+            <MenuItem value="retweets">Retweets</MenuItem>
+            <MenuItem value="likes">Likes</MenuItem>
           </Select>
         </FormControl>
       </Stack>

@@ -92,24 +92,18 @@ In a new terminal, navigate to the frontend folder:
 1. **Install Node.js dependencies**
    ```bash
    navigate to front end file
-   npm install
+   yarn install
    ```
 
 2. **Configure API endpoint**
    - By default, API calls go to `http://localhost:5000`.
-   - To use a proxy instead of hard-coded URLs, add to `frontend/package.json`:
-     ```json
-     "proxy": "http://localhost:5000"
-     ```
    - Then fetch from `/search?...` in code.
 
 3. **Start the development server**
    ```bash
-   npm start        # Create React App
-   # OR
-   npm run dev      # Vite-based projects
+   yarn start        # Create React App
    ```
-   - App URL: `http://localhost:3000` (CRA) or `http://localhost:5173` (Vite)
+   - App URL: `http://localhost:3000`
 
 ---
 
@@ -141,15 +135,43 @@ In a new terminal, navigate to the frontend folder:
 
 ## Production Build & Deployment
 
-1. **Build React for production**:
-   ```bash
-   npm run build
-   ```
-2. **Serve static files**:
-   - Copy `frontend/build` into Flask’s `static/` folder, or
-   - Serve via Nginx/Apache and point API traffic to `backend`.
-3. **Set up production env**:
-   - Secure environment variables
-   - Configure HTTPS
+Replace React Build on Your VM (45.32.214.14)
+
+### Step 1: Build on Local Machine
+In your React project root, run:
+```bash
+yarn build
+```
+This generates the new static build inside the build/ directory.
+
+### Step 2: Upload Build to VM
+From the same project directory on your local machine:
+```bash
+scp -r build/ root@45.32.214.14:/root/new_build
+```
+
+### Step 3: SSH into VM
+```bash
+ssh root@45.32.214.14
+```
+
+### Step 4: Replace Old Build
+If you're serving the frontend from /var/www/ioa-frontend (based on earlier Nginx config):
+```bash
+rm -rf /var/www/ioa-frontend
+mv /root/new_build /var/www/ioa-frontend
+```
+
+### Step 5: Restart Nginx
+```bash
+systemctl restart nginx
+```
+
+### Final Step: Verify Deployment
+Open a browser and go to:
+```
+http://45.32.214.14
+```
+You should now see your updated frontend live.
 
 ---

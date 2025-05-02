@@ -76,9 +76,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         <>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant="body1" color="text.secondary">
-                Showing results {tweets.length > 0 ? `${startIndex}-${endIndex}` : '0'} out of {total}
-              </Typography>
+              {searchQuery && (
+                <Typography variant="body1" color="text.secondary">
+                  Showing results {tweets.length > 0 ? `${startIndex}-${endIndex}` : '0'} out of {total}
+                </Typography>
+              )}
               {tweets.length > 0 && (
                 <DownloadCSVButton
                   searchQuery={searchQuery}
@@ -102,19 +104,20 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             )}
           </Box>
           
-          {tweets.length === 0 ? (
-            <Paper sx={{ p: 4, textAlign: 'center' }}>
-              <Typography variant="h6" gutterBottom>
+          {searchQuery && tweets.length === 0 && (
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
+              <Typography variant="h6" color="text.secondary">
                 No tweets found
               </Typography>
-            </Paper>
-          ) : (
+            </Box>
+          )}
+          
+          {tweets.length > 0 && (
             <>
-              {tweets.map((tweet, index) => (
+              {tweets.map((tweet) => (
                 <TweetCard
                   key={tweet.tweetid}
                   tweet={tweet}
-                  index={index}
                   onCardClick={onCardClick}
                 />
               ))}
