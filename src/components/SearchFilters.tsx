@@ -1,3 +1,13 @@
+/**
+ * SearchFilters Component
+ * Provides filtering controls for tweet search results including:
+ * - Language selection
+ * - Date range picker
+ * - Sort order selection
+ * 
+ * Uses Material-UI components for consistent styling and UX
+ */
+
 import React from 'react';
 import {
   Box,
@@ -14,6 +24,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
+// Props interface for the search filters
 interface SearchFiltersProps {
   language: string;
   startDate: Dayjs | null;

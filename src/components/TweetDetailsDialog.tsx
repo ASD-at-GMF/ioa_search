@@ -26,6 +26,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import { Tweet } from './types';
 import { formatDateDetailed, getHashtags } from './utils';
 
+// Props interface for the tweet details dialog
 interface TweetDetailsDialogProps {
   tweet: Tweet | null;
   open: boolean;

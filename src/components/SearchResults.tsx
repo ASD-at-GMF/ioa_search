@@ -1,3 +1,13 @@
+/**
+ * SearchResults Component
+ * Displays the search results with features including:
+ * - Paginated tweet list
+ * - Loading and error states
+ * - Active filters display
+ * - CSV export functionality
+ * - Tweet count and statistics
+ */
+
 import React, {useEffect, useState} from 'react';
 import {
   Box,
@@ -12,6 +22,7 @@ import { Tweet } from './types';
 import TweetCard from './TweetCard';
 import DownloadCSVButton from './DownloadCSVButton';
 
+// Props interface for the search results component
 interface SearchResultsProps {
   loading: boolean;
   error: Error | null;

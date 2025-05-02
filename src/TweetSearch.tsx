@@ -25,8 +25,15 @@ import {
 import { start } from 'repl';
 import { ChatRounded } from '@mui/icons-material';
 
+// Number of tweets to display per page
 const PAGE_SIZE = 10;
+
+/**
+ * Main search component for the Information Operation Archive
+ * Handles search functionality, filtering, and displaying tweet data and insights
+ */
 const TweetSearch: React.FC = () => {
+  // State management for tweets, search, and UI controls
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [allTweets, setAllTweets] = useState<Tweet[]>([]);
   const [total, setTotal] = useState<number>(20);
@@ -42,17 +49,18 @@ const TweetSearch: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>('');
   const [hashtagInput, setHashtagInput] = useState('');
   const [hashtags, setHashtags] = useState<string[]>([]);
-  const [insights, setInsights] = useState<{
-    top_hashtags: string[];
-    top_users: string[];
-    top_urls: string[];
-  } | null>(null);
+  // const [insights, setInsights] = useState<{
+  //   top_hashtags: string[];
+  //   top_users: string[];
+  //   top_urls: string[];
+  // } | null>(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
   
   const [suggestedHashtags, setSuggestedHashtags] = useState<string[]>([]);
   const [searchTimestamp, setSearchTimestamp] = useState<number>(0);
   const [insightData, setInsightData] = useState<any>(null);
 
+  // Fetches all tweets for the current search query (used for CSV export)
   const fetchAllTweets = async () => {
     setLoading(true);
     setError(null);
@@ -93,7 +101,9 @@ const TweetSearch: React.FC = () => {
     }
   };
 
+  // Fetches analytics and insights data for the current search
   const fetchInsights = async (query: string) => {
+    setInsightsLoading(true);
     try {
       const url = new URL('https://ioarchive.com/insights');
       url.searchParams.append('query', query);
@@ -109,9 +119,12 @@ const TweetSearch: React.FC = () => {
       setInsightData(data);
     } catch (err) {
       console.error('Error fetching insights:', err);
+    } finally {
+      setInsightsLoading(false);
     }
   };
 
+  // Fetches paginated tweets based on search criteria and filters
   const fetchTweets = async (page: number, query: string = '') => {
     setLoading(true);
     setError(null);
@@ -158,6 +171,7 @@ const TweetSearch: React.FC = () => {
     }
   };
   
+  // Fetches popular hashtags for autocomplete suggestions
   const fetchHashtagSuggestions = async () => {
     try {
       const url = new URL('http://ioarchive.com/insights');
@@ -173,36 +187,36 @@ const TweetSearch: React.FC = () => {
     }
   };
 
-  const fetchInsights = async (query: string = '') => {
-    setInsightsLoading(true);
-    try {
-      const url = new URL('http://45.32.214.14:5000/insights');
-      url.searchParams.append('query', query);
-      url.searchParams.append('language', language);
-      if (startDate && endDate) {
-        url.searchParams.append('from', formatDate(startDate.toString()));
-        url.searchParams.append('to', formatDate(endDate.toString()));
-      }
-      hashtags.forEach(tag => {
-        const normalized = tag.startsWith('#') ? tag.slice(1) : tag;
-        url.searchParams.append('hashtags', normalized);
-      });
+  // const fetchInsights = async (query: string = '') => {
+  //   setInsightsLoading(true);
+  //   try {
+  //     const url = new URL('http://45.32.214.14:5000/insights');
+  //     url.searchParams.append('query', query);
+  //     url.searchParams.append('language', language);
+  //     if (startDate && endDate) {
+  //       url.searchParams.append('from', formatDate(startDate.toString()));
+  //       url.searchParams.append('to', formatDate(endDate.toString()));
+  //     }
+  //     hashtags.forEach(tag => {
+  //       const normalized = tag.startsWith('#') ? tag.slice(1) : tag;
+  //       url.searchParams.append('hashtags', normalized);
+  //     });
 
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error('Failed to fetch insights');
+  //     const response = await fetch(url.toString());
+  //     if (!response.ok) throw new Error('Failed to fetch insights');
 
-      const data = await response.json();
-      setInsights({
-        top_hashtags: data.top_hashtags.map((item: any) => item.key),
-        top_users: data.top_users.map((item: any) => item.key),
-        top_urls: data.top_urls.map((item: any) => item.key),
-      });
-    } catch (err) {
-      console.error('Error fetching insights:', err);
-    } finally {
-      setInsightsLoading(false);
-    }
-  };
+  //     const data = await response.json();
+  //     setInsights({
+  //       top_hashtags: data.top_hashtags.map((item: any) => item.key),
+  //       top_users: data.top_users.map((item: any) => item.key),
+  //       top_urls: data.top_urls.map((item: any) => item.key),
+  //     });
+  //   } catch (err) {
+  //     console.error('Error fetching insights:', err);
+  //   } finally {
+  //     setInsightsLoading(false);
+  //   }
+  // };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -269,6 +283,7 @@ const TweetSearch: React.FC = () => {
     fetchHashtagSuggestions();
   }, []);
 
+  // Render the main application layout with search, filters, and results
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
@@ -280,9 +295,14 @@ const TweetSearch: React.FC = () => {
           </Toolbar>
         </AppBar> */}
 
-        <Typography variant="h2" component="h2">
-          Information Archive Search
+        <Typography variant="h2" component="h2" sx={{ fontFamily: 'Roboto, serif' }}>
+          Information Operation Archive
         </Typography>
+        <Box sx={{ width: '50em', m: 'auto' }}>
+          <Typography align="center">
+            The Information Operation Archive (IOA) is a searchable database that hosts publicly available and rigorously attributed datapoints from known Information Operations on social media platforms.
+          </Typography>
+        </Box>
         
         <Container maxWidth="md" sx={{ py: 4 }}>
           <SearchBar 
@@ -368,6 +388,42 @@ const TweetSearch: React.FC = () => {
               {insightData && (
                 <Chart insightData={insightData} />
               )}
+              {insightsLoading ? (
+                <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <span>Loading insights</span>
+                    <Box
+                      component="span"
+                      sx={{
+                        width: 16,
+                        height: 16,
+                        border: '2px solid #ccc',
+                        borderTop: '2px solid #333',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                      }}
+                    />
+                  </Box>
+                  <style>
+                    {`@keyframes spin {
+                      0% { transform: rotate(0deg); }
+                      100% { transform: rotate(360deg); }
+                    }`}
+                  </style>
+                </Box>
+              ) : insightData && (
+                <Box sx={{ mt: 4 }}>
+                  <Box>
+                    <strong>Top Hashtags:</strong> {insightData.top_hashtags.map((item: any) => item.key).join(', ')}
+                  </Box>
+                  <Box sx={{ mt: 1 }}>
+                    <strong>Top Users:</strong> {insightData.top_users.map((item: any) => item.key).join(', ')}
+                  </Box>
+                  <Box sx={{ mt: 1 }}>
+                    <strong>Top URLs:</strong> {insightData.top_urls.map((item: any) => item.key).join(', ')}
+                  </Box>
+                </Box>
+              )}
             </Grid>
             <Grid item xs={12} md={6}>
               <SearchResults
@@ -387,58 +443,6 @@ const TweetSearch: React.FC = () => {
               />
             </Grid>
           </Grid>
-
-          <SearchResults
-            loading={loading}
-            error={error}
-            tweets={tweets}
-            total={total}
-            searchQuery={searchQuery}
-            onCardClick={handleCardClick}
-            onClearSearch={handleClearSearch}
-            fetchTweets={fetchTweets}
-            language={language}
-            startDate={startDate ? formatDate(startDate.toString()) : null}
-            endDate={endDate ? formatDate(endDate.toString()) : null}
-            sortBy={sortBy}
-            hashtags={hashtags}
-          />
-          {insightsLoading ? (
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <span>Loading insights</span>
-                <Box
-                  component="span"
-                  sx={{
-                    width: 16,
-                    height: 16,
-                    border: '2px solid #ccc',
-                    borderTop: '2px solid #333',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite',
-                  }}
-                />
-              </Box>
-              <style>
-                {`@keyframes spin {
-                  0% { transform: rotate(0deg); }
-                  100% { transform: rotate(360deg); }
-                }`}
-              </style>
-            </Box>
-          ) : insights && (
-            <Box sx={{ mt: 4 }}>
-              <Box>
-                <strong>Top Hashtags:</strong> {insights.top_hashtags.join(', ')}
-              </Box>
-              <Box sx={{ mt: 1 }}>
-                <strong>Top Users:</strong> {insights.top_users.join(', ')}
-              </Box>
-              <Box sx={{ mt: 1 }}>
-                <strong>Top URLs:</strong> {insights.top_urls.join(', ')}
-              </Box>
-            </Box>
-          )}
         </Container>
         
         <TweetDetailsDialog

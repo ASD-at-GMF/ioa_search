@@ -1,3 +1,11 @@
+/**
+ * Type definitions for the IOA Search application
+ */
+
+/**
+ * Tweet interface representing the structure of a tweet from the IOA dataset
+ * Contains all metadata and engagement metrics for a single tweet
+ */
 export interface Tweet {
   account_creation_date: string | null;
   account_language: string;
@@ -33,6 +41,9 @@ export interface Tweet {
   userid: string;
 }
 
+/**
+ * API response interface for paginated tweet search results
+ */
 export interface ApiResponse {
   page: number;
   size: number;

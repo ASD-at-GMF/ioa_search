@@ -1,3 +1,13 @@
+/**
+ * TweetCard Component
+ * Displays an individual tweet with rich formatting and interactions:
+ * - Tweet text and metadata
+ * - Engagement metrics (likes, retweets, replies)
+ * - Hashtag highlighting
+ * - Clickable card interface
+ * - Timestamp formatting
+ */
+
 import React from 'react';
 import {
   Typography,
@@ -17,6 +27,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { Tweet } from './types';
 import { formatDate, getHashtags, formatNumber } from './utils';
 
+// Props interface for the tweet card
 interface TweetCardProps {
   tweet: Tweet;
 
