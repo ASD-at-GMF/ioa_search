@@ -5,7 +5,7 @@ export interface Tweet {
   file_name: string;
   follower_count: number;
   following_count: number;
-  hashtags: string;
+  hashtags: string[];
   in_reply_to_tweetid: string;
   in_reply_to_userid: string;
   is_retweet: string;

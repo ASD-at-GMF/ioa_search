@@ -40,8 +40,8 @@ const DownloadCSVButton: React.FC<DownloadCSVButtonProps> = ({
         url.searchParams.append('language', language);
         
         if (startDate && endDate) {
-          url.searchParams.append('from', startDate);
-          url.searchParams.append('to', endDate);
+          url.searchParams.append('to_date', startDate);
+          url.searchParams.append('from_date', endDate);
         }
         
         url.searchParams.append('sort_by', sortBy);
