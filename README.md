@@ -21,7 +21,7 @@
 
 Ensure the following are installed on your machine:
 
-- **Node.js & npm** (v14+ recommended)
+- **Node.js & yarn** (v14+ recommended)
 - **Python** (v3.8+)
 - **Git** (optional, for cloning the repos)
 - **Elasticsearch** instance (remote or local)
